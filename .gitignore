@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Build outputs
+backend/dist/
+backend/coverage/
+frontend/.next/
+frontend/out/
+
+# TypeScript
+*.tsbuildinfo
