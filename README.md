@@ -1,6 +1,6 @@
 # AI Creator Studio
 
-Phase 1 through Phase 13 setup for AI Creator Studio.
+Phase 1 through Phase 14 setup for AI Creator Studio.
 
 ## Stack
 - Backend: NestJS + TypeScript
@@ -104,6 +104,7 @@ Notes:
 docker compose exec backend npm run prisma:migrate:deploy --workspace backend
 ```
 - If port `3000` or `4000` is already in use on your machine, change `FRONTEND_PORT` and/or `BACKEND_PORT` in `.env` before running compose.
+- To use OpenAI in Docker, set `AI_PROVIDER=openai` and `OPENAI_API_KEY=...` in root `.env` before running compose.
 - Redis is provisioned in Phase 13 as infrastructure and is not yet used by application logic.
 
 ### Prisma Migration (Phase 2)
@@ -121,19 +122,41 @@ npm run prisma:studio --workspace backend
 npm run prisma:seed --workspace backend
 ```
 
-### AI Provider (Phase 5)
+### AI Provider (Phase 5 + Phase 14)
 Set AI provider in backend env:
 
 ```bash
 AI_PROVIDER=mock
 ```
 
-Current behavior:
-- `mock` provider is active
+Mock mode:
+- `AI_PROVIDER=mock`
 - no real OpenAI/Gemini/Ollama API calls are made
 - AI outputs are deterministic mock responses for local development
 
+OpenAI mode:
+
+```bash
+AI_PROVIDER=openai
+OPENAI_API_KEY=sk-your-key
+OPENAI_MODEL=gpt-5.4-mini
+OPENAI_TIMEOUT_MS=30000
+```
+
+OpenAI notes:
+- `OPENAI_API_KEY` is backend-only; never add it to `frontend/.env` or any `NEXT_PUBLIC_*` variable.
+- Real AI generation uses OpenAI structured JSON output and validates the response before saving.
+- If `AI_PROVIDER=openai` is selected without `OPENAI_API_KEY`, generation endpoints return a safe service-unavailable error.
+- If OpenAI times out or returns invalid structured data, the app returns a safe fallback error message instead of exposing provider details.
+- Switch back to local mock generation with `AI_PROVIDER=mock`.
+
 ### Frontend Auth Flow (Phase 10)
+Set backend CORS origin in `backend/.env`:
+
+```bash
+CORS_ORIGIN=http://localhost:3001
+```
+
 Set frontend API URL in `frontend/.env`:
 
 ```bash
@@ -630,7 +653,16 @@ npm run test
 - Added Postgres healthcheck and backend migrate-on-start flow (`prisma migrate deploy`)
 - Added `.env.docker.example` and Docker runbook commands in README
 
+## Phase 14 Scope Completed
+- Added OpenAI provider behind the existing backend `AiProvider` interface
+- Kept `AI_PROVIDER=mock` as the default deterministic local provider
+- Added `AI_PROVIDER=openai` selection with backend-only OpenAI env variables
+- Added structured output validation for ideas, scripts, SEO metadata, and thumbnail prompts
+- Added safe error handling for missing API keys, timeouts, and invalid AI responses
+- Updated README and env templates with OpenAI switching instructions
+
 ## Not Implemented Yet (Out of Scope)
-- Real AI provider integration (OpenAI/Gemini/Ollama)
+- Gemini/Ollama provider integration
 - Real thumbnail image generation
+# AI-Creator-Studio
 # AI-Creator-Studio
