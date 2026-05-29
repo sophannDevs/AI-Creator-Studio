@@ -11,6 +11,7 @@ import { useAuth } from '@/components/providers/auth-provider';
 import { ProtectedRoute } from '@/components/routing/protected-route';
 import { generateSeo, getSeoByIdeaId, type SeoResponse } from '@/lib/api/seo';
 import { toApiError } from '@/lib/api/client';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -94,6 +95,13 @@ export default function IdeaSeoPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
+        <div className="space-y-5">
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects', href: '/projects' },
+            { label: 'Ideas', href: `/ideas/${ideaId}` },
+            { label: 'SEO' },
+          ]} />
         <GenerationPanel
           title="SEO Generator"
           description="Generate SEO metadata for this idea."
@@ -165,6 +173,7 @@ export default function IdeaSeoPage() {
             />
           }
         />
+        </div>
       </DashboardLayout>
     </ProtectedRoute>
   );

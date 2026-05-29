@@ -11,6 +11,7 @@ import { useAuth } from '@/components/providers/auth-provider';
 import { ProtectedRoute } from '@/components/routing/protected-route';
 import { generateThumbnail, getThumbnailByIdeaId, type ThumbnailResponse } from '@/lib/api/thumbnail';
 import { toApiError } from '@/lib/api/client';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -94,6 +95,13 @@ export default function IdeaThumbnailPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
+        <div className="space-y-5">
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects', href: '/projects' },
+            { label: 'Ideas', href: `/ideas/${ideaId}` },
+            { label: 'Thumbnail' },
+          ]} />
         <GenerationPanel
           title="Thumbnail Prompt Generator"
           description="Generate thumbnail prompt details for this idea."
@@ -157,6 +165,7 @@ export default function IdeaThumbnailPage() {
             />
           }
         />
+        </div>
       </DashboardLayout>
     </ProtectedRoute>
   );

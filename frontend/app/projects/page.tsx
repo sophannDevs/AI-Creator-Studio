@@ -11,6 +11,7 @@ import { Project, listProjects } from '@/lib/api/projects';
 import { toApiError } from '@/lib/api/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 
 export default function ProjectsPage() {
   const { token, isAuthenticated, isLoading: isAuthLoading } = useAuth();
@@ -54,6 +55,10 @@ export default function ProjectsPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects' },
+          ]} />
           <header className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>

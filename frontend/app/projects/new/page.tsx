@@ -10,6 +10,7 @@ import { useAuth } from '@/components/providers/auth-provider';
 import { ProtectedRoute } from '@/components/routing/protected-route';
 import { createProject } from '@/lib/api/projects';
 import { toApiError } from '@/lib/api/client';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -51,6 +52,11 @@ export default function NewProjectPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects', href: '/projects' },
+            { label: 'New Project' },
+          ]} />
           <header className="space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight">Create Project</h1>
             <p className="text-sm text-muted-foreground">

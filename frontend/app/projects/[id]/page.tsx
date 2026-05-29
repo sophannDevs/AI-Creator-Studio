@@ -11,6 +11,7 @@ import { deleteProject, getProject, type Project, updateProject } from '@/lib/ap
 import { toApiError } from '@/lib/api/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 import { ChevronLeft } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -142,6 +143,11 @@ export default function ProjectDetailPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects', href: '/projects' },
+            { label: project?.name ?? 'Project' },
+          ]} />
           <header className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">Project Detail</h1>

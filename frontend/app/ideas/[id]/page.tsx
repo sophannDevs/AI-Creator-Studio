@@ -14,6 +14,7 @@ import { listProjects, type Project } from '@/lib/api/projects';
 import { toApiError } from '@/lib/api/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { buttonVariants } from '@/components/ui/button';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 
 export default function IdeaDetailPage() {
   const params = useParams<{ id: string }>();
@@ -85,6 +86,12 @@ export default function IdeaDetailPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects', href: '/projects' },
+            ...(project ? [{ label: project.name, href: `/projects/${project.id}/ideas` }] : []),
+            { label: idea?.title ?? 'Idea' },
+          ]} />
           <header className="space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight">Idea Detail</h1>
             <p className="text-sm text-muted-foreground">

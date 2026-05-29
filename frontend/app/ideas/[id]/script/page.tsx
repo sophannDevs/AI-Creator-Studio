@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, Copy, Check, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronDown, Copy, Check, Sparkles, Clock, Globe, Mic2 } from 'lucide-react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { useAuth } from '@/components/providers/auth-provider';
 import { ProtectedRoute } from '@/components/routing/protected-route';
@@ -13,6 +13,7 @@ import { findVideoIdeaAcrossProjects } from '@/lib/api/ideas';
 import { toApiError } from '@/lib/api/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 
 const TONE_OPTIONS = ['Beginner friendly', 'Professional', 'Casual', 'Educational', 'Entertaining'];
 const DURATION_OPTIONS = ['3 minutes', '5 minutes', '8 minutes', '10 minutes', '15 minutes'];
@@ -127,6 +128,14 @@ export default function IdeaScriptPage() {
       <DashboardLayout>
         <div className="space-y-8 py-4">
 
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects', href: '/projects' },
+            { label: 'Ideas', href: `/ideas/${ideaId}` },
+            { label: ideaTitle ?? 'Idea', href: `/ideas/${ideaId}` },
+            { label: 'Script' },
+          ]} />
+
           {/* Back link */}
           <Link
             href={`/ideas/${ideaId}`}
@@ -166,32 +175,50 @@ export default function IdeaScriptPage() {
 
               {/* Pill chip selectors */}
               <div className="flex flex-wrap gap-2">
-                <select
-                  value={tone}
-                  onChange={(e) => setTone(e.target.value)}
-                  disabled={isGenerating}
-                  className="cursor-pointer appearance-none rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-                >
-                  {TONE_OPTIONS.map((o) => <option key={o}>{o}</option>)}
-                </select>
+                {/* Tone */}
+                <label className="relative inline-flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 has-[:disabled]:opacity-50">
+                  <Mic2 className="size-3.5 text-gray-400" />
+                  <span>{tone}</span>
+                  <ChevronDown className="size-3.5 text-gray-400" />
+                  <select
+                    value={tone}
+                    onChange={(e) => setTone(e.target.value)}
+                    disabled={isGenerating}
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  >
+                    {TONE_OPTIONS.map((o) => <option key={o}>{o}</option>)}
+                  </select>
+                </label>
 
-                <select
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  disabled={isGenerating}
-                  className="cursor-pointer appearance-none rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-                >
-                  {DURATION_OPTIONS.map((o) => <option key={o}>{o}</option>)}
-                </select>
+                {/* Duration */}
+                <label className="relative inline-flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 has-[:disabled]:opacity-50">
+                  <Clock className="size-3.5 text-gray-400" />
+                  <span>{duration}</span>
+                  <ChevronDown className="size-3.5 text-gray-400" />
+                  <select
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    disabled={isGenerating}
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  >
+                    {DURATION_OPTIONS.map((o) => <option key={o}>{o}</option>)}
+                  </select>
+                </label>
 
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  disabled={isGenerating}
-                  className="cursor-pointer appearance-none rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-                >
-                  {LANGUAGE_OPTIONS.map((o) => <option key={o}>{o}</option>)}
-                </select>
+                {/* Language */}
+                <label className="relative inline-flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 has-[:disabled]:opacity-50">
+                  <Globe className="size-3.5 text-gray-400" />
+                  <span>{language}</span>
+                  <ChevronDown className="size-3.5 text-gray-400" />
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    disabled={isGenerating}
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  >
+                    {LANGUAGE_OPTIONS.map((o) => <option key={o}>{o}</option>)}
+                  </select>
+                </label>
               </div>
 
               {/* Generate button */}

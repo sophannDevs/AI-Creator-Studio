@@ -15,6 +15,7 @@ import { getProject, type Project } from '@/lib/api/projects';
 import { toApiError } from '@/lib/api/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageBreadcrumb } from '@/components/layout/page-breadcrumb';
 
 export default function ProjectIdeasPage() {
   const params = useParams<{ id: string }>();
@@ -107,6 +108,12 @@ export default function ProjectIdeasPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
+          <PageBreadcrumb items={[
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Projects', href: '/projects' },
+            { label: project?.name ?? 'Project', href: `/projects/${projectId}` },
+            { label: 'Ideas' },
+          ]} />
           <header className="space-y-1">
             <h1 className="text-2xl font-semibold tracking-tight">Project Ideas</h1>
             <p className="text-sm text-muted-foreground">
