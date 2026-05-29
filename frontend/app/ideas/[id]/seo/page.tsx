@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { EmptyStateCard } from '@/components/ideas/empty-state-card';
@@ -10,6 +11,10 @@ import { useAuth } from '@/components/providers/auth-provider';
 import { ProtectedRoute } from '@/components/routing/protected-route';
 import { generateSeo, getSeoByIdeaId, type SeoResponse } from '@/lib/api/seo';
 import { toApiError } from '@/lib/api/client';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function IdeaSeoPage() {
   const params = useParams<{ id: string }>();
@@ -37,9 +42,7 @@ export default function IdeaSeoPage() {
       setResult(data);
     } catch (rawError) {
       const apiError = toApiError(rawError);
-      if (apiError.status !== 404) {
-        setError(apiError.message);
-      }
+      if (apiError.status !== 404) setError(apiError.message);
       setResult(null);
     } finally {
       setIsLoading(false);
@@ -101,59 +104,58 @@ export default function IdeaSeoPage() {
           hasResult={Boolean(result)}
           form={
             <form onSubmit={handleGenerate} className="space-y-4">
-              <label className="space-y-2">
-                <span className="text-sm font-medium text-zinc-700">Target Keyword</span>
-                <input
+              <div className="space-y-2">
+                <Label>Target Keyword</Label>
+                <Input
                   value={targetKeyword}
-                  onChange={(event) => setTargetKeyword(event.target.value)}
+                  onChange={(e) => setTargetKeyword(e.target.value)}
                   placeholder="Docker for Java developers"
                   disabled={isGenerating}
-                  className="input-control"
                 />
-              </label>
+              </div>
 
-              <button
-                type="submit"
-                disabled={isGenerating}
-                className="button-primary"
-              >
+              <Button type="submit" disabled={isGenerating}>
                 {isGenerating ? 'Generating SEO...' : 'Generate SEO'}
-              </button>
+              </Button>
 
-              <p className="text-xs text-zinc-500">
-                <Link href={`/ideas/${ideaId}`} className="underline">
-                  Back to idea detail
-                </Link>
-              </p>
+              <Link
+                href={`/ideas/${ideaId}`}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronLeft className="size-4" />
+                Back to idea detail
+              </Link>
             </form>
           }
           result={
             result ? (
-              <section className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5">
-                <h2 className="text-lg font-semibold text-zinc-900">Saved SEO</h2>
-                <dl className="mt-3 space-y-3 text-sm text-zinc-700">
-                  <div>
-                    <dt className="font-medium text-zinc-900">Title</dt>
-                    <dd>{result.title}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium text-zinc-900">Description</dt>
-                    <dd>{result.description}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium text-zinc-900">Tags</dt>
-                    <dd>{result.tags.join(', ') || 'No tags'}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium text-zinc-900">Hashtags</dt>
-                    <dd>{result.hashtags.join(' ') || 'No hashtags'}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium text-zinc-900">SEO Score</dt>
-                    <dd>{result.seoScore}</dd>
-                  </div>
-                </dl>
-              </section>
+              <Card>
+                <CardContent className="p-4 sm:p-5">
+                  <h2 className="text-lg font-semibold">Saved SEO</h2>
+                  <dl className="mt-3 space-y-3 text-sm text-muted-foreground">
+                    <div>
+                      <dt className="font-medium text-foreground">Title</dt>
+                      <dd>{result.title}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-medium text-foreground">Description</dt>
+                      <dd>{result.description}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-medium text-foreground">Tags</dt>
+                      <dd>{result.tags.join(', ') || 'No tags'}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-medium text-foreground">Hashtags</dt>
+                      <dd>{result.hashtags.join(' ') || 'No hashtags'}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-medium text-foreground">SEO Score</dt>
+                      <dd>{result.seoScore}</dd>
+                    </div>
+                  </dl>
+                </CardContent>
+              </Card>
             ) : null
           }
           emptyState={

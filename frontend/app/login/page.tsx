@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { AuthCard } from '@/components/auth/auth-card';
 import { AuthField } from '@/components/auth/auth-field';
@@ -77,6 +78,7 @@ export default function LoginPage() {
             placeholder="you@example.com"
             autoComplete="email"
             disabled={isSubmitting}
+            required
           />
 
           <AuthField
@@ -89,6 +91,7 @@ export default function LoginPage() {
             placeholder="Enter your password"
             autoComplete="current-password"
             disabled={isSubmitting}
+            required
           />
 
           {formError ? <AuthMessage variant="error" message={formError} /> : null}
@@ -105,11 +108,13 @@ export default function LoginPage() {
           By continuing, you agree to manage your content responsibly.
         </p>
 
-        <p className="mt-2 text-xs text-zinc-500">
-          <Link href="/" className="underline">
-            Back to home
-          </Link>
-        </p>
+        <Link
+          href="/"
+          className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" />
+          Back to home
+        </Link>
       </AuthCard>
     </main>
   );

@@ -2,23 +2,19 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { ChevronLeft } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { EmptyStateCard } from '@/components/ideas/empty-state-card';
-import {
-  IdeaGenerationForm,
-  type IdeaGenerationValues,
-} from '@/components/ideas/idea-generation-form';
+import { IdeaGenerationForm, type IdeaGenerationValues } from '@/components/ideas/idea-generation-form';
 import { IdeasList } from '@/components/ideas/ideas-list';
 import { useAuth } from '@/components/providers/auth-provider';
 import { ProtectedRoute } from '@/components/routing/protected-route';
-import {
-  generateVideoIdeas,
-  listVideoIdeasByProject,
-  type VideoIdea,
-} from '@/lib/api/ideas';
+import { generateVideoIdeas, listVideoIdeasByProject, type VideoIdea } from '@/lib/api/ideas';
 import { getProject, type Project } from '@/lib/api/projects';
 import { toApiError } from '@/lib/api/client';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function ProjectIdeasPage() {
   const params = useParams<{ id: string }>();
@@ -52,11 +48,11 @@ export default function ProjectIdeasPage() {
       setIdeas(ideasData);
     } catch (rawError) {
       const apiError = toApiError(rawError);
-      if (apiError.status === 404) {
-        setError('Project not found. It may not belong to your account.');
-      } else {
-        setError(apiError.message);
-      }
+      setError(
+        apiError.status === 404
+          ? 'Project not found. It may not belong to your account.'
+          : apiError.message,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -111,43 +107,45 @@ export default function ProjectIdeasPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
-          <header className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
-              Project Ideas
-            </h1>
-            <p className="text-sm text-zinc-600">
+          <header className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">Project Ideas</h1>
+            <p className="text-sm text-muted-foreground">
               Generate and manage video ideas for{' '}
-              <span className="font-medium text-zinc-900">
+              <span className="font-medium text-foreground">
                 {project?.name ?? 'this project'}
               </span>
               .
             </p>
-            <p className="text-xs text-zinc-500">
-              <Link href={`/projects/${projectId}`} className="underline">
-                Back to project
-              </Link>
-            </p>
+            <Link
+              href={`/projects/${projectId}`}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ChevronLeft className="size-4" />
+              Back to project
+            </Link>
           </header>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5">
-            <IdeaGenerationForm
-              isSubmitting={isGenerating}
-              error={error}
-              success={success}
-              onSubmit={handleGenerate}
-            />
-          </div>
+          <Card>
+            <CardContent className="p-4 sm:p-5">
+              <IdeaGenerationForm
+                isSubmitting={isGenerating}
+                error={error}
+                success={success}
+                onSubmit={handleGenerate}
+              />
+            </CardContent>
+          </Card>
 
           {isLoading ? (
-            <p className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-              Loading ideas...
-            </p>
+            <Alert>
+              <AlertDescription>Loading ideas...</AlertDescription>
+            </Alert>
           ) : null}
 
           {!isLoading && error && !ideas.length ? (
-            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
-            </p>
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           ) : null}
 
           {!isLoading && !error && sortedIdeas.length === 0 ? (
@@ -157,9 +155,7 @@ export default function ProjectIdeasPage() {
             />
           ) : null}
 
-          {!isLoading && sortedIdeas.length > 0 ? (
-            <IdeasList ideas={sortedIdeas} />
-          ) : null}
+          {!isLoading && sortedIdeas.length > 0 ? <IdeasList ideas={sortedIdeas} /> : null}
         </section>
       </DashboardLayout>
     </ProtectedRoute>

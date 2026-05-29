@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { ChevronLeft } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
 import { EmptyStateCard } from '@/components/ideas/empty-state-card';
@@ -11,6 +12,8 @@ import { ProtectedRoute } from '@/components/routing/protected-route';
 import { findVideoIdeaAcrossProjects, type VideoIdea } from '@/lib/api/ideas';
 import { listProjects, type Project } from '@/lib/api/projects';
 import { toApiError } from '@/lib/api/client';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { buttonVariants } from '@/components/ui/button';
 
 export default function IdeaDetailPage() {
   const params = useParams<{ id: string }>();
@@ -34,10 +37,9 @@ export default function IdeaDetailPage() {
       setError(null);
 
       const projects = await listProjects(token);
-
       const ideaMatch = await findVideoIdeaAcrossProjects(
         token,
-        projects.map((projectItem) => projectItem.id),
+        projects.map((p) => p.id),
         ideaId,
       );
 
@@ -48,8 +50,7 @@ export default function IdeaDetailPage() {
         return;
       }
 
-      const matchedProject =
-        projects.find((candidate) => candidate.id === ideaMatch.projectId) ?? null;
+      const matchedProject = projects.find((p) => p.id === ideaMatch.projectId) ?? null;
 
       if (!matchedProject) {
         setError('Video idea not found. It may not belong to your account.');
@@ -84,32 +85,32 @@ export default function IdeaDetailPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
-          <header className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
-              Idea Detail
-            </h1>
-            <p className="text-sm text-zinc-600">
+          <header className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">Idea Detail</h1>
+            <p className="text-sm text-muted-foreground">
               Review this idea and generate script, SEO, and thumbnail outputs.
             </p>
             {project ? (
-              <p className="text-xs text-zinc-500">
-                <Link href={`/projects/${project.id}/ideas`} className="underline">
-                  Back to {project.name} ideas
-                </Link>
-              </p>
+              <Link
+                href={`/projects/${project.id}/ideas`}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronLeft className="size-4" />
+                Back to {project.name} ideas
+              </Link>
             ) : null}
           </header>
 
           {isLoading ? (
-            <p className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-              Loading idea...
-            </p>
+            <Alert>
+              <AlertDescription>Loading idea...</AlertDescription>
+            </Alert>
           ) : null}
 
           {!isLoading && error ? (
-            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {error}
-            </p>
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           ) : null}
 
           {!isLoading && !error && idea ? <IdeaDetailCard idea={idea} /> : null}
@@ -125,19 +126,19 @@ export default function IdeaDetailPage() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Link
                 href={`/ideas/${idea.id}/script`}
-                className="button-secondary w-full"
+                className={buttonVariants({ variant: 'outline', className: 'w-full justify-center' })}
               >
                 Generate Script
               </Link>
               <Link
                 href={`/ideas/${idea.id}/seo`}
-                className="button-secondary w-full"
+                className={buttonVariants({ variant: 'outline', className: 'w-full justify-center' })}
               >
                 Generate SEO
               </Link>
               <Link
                 href={`/ideas/${idea.id}/thumbnail`}
-                className="button-secondary w-full"
+                className={buttonVariants({ variant: 'outline', className: 'w-full justify-center' })}
               >
                 Generate Thumbnail
               </Link>

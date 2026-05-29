@@ -1,3 +1,6 @@
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+
 type AuthFieldProps = {
   id: string;
   name: string;
@@ -8,6 +11,7 @@ type AuthFieldProps = {
   placeholder?: string;
   autoComplete?: string;
   disabled?: boolean;
+  required?: boolean;
 };
 
 export function AuthField({
@@ -20,21 +24,26 @@ export function AuthField({
   placeholder,
   autoComplete,
   disabled = false,
+  required = false,
 }: AuthFieldProps) {
   return (
-    <label htmlFor={id} className="space-y-2">
-      <span className="block text-sm font-medium text-zinc-700">{label}</span>
-      <input
+    <div className="space-y-2">
+      <Label htmlFor={id}>
+        {label}
+        {required && <span className="ml-1 text-red-500">*</span>}
+      </Label>
+      <Input
         id={id}
         name={name}
         type={type}
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         autoComplete={autoComplete}
         disabled={disabled}
-        className="input-control"
+        required={required}
+        aria-required={required}
       />
-    </label>
+    </div>
   );
 }

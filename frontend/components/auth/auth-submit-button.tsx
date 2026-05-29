@@ -1,21 +1,15 @@
+import { Button } from '@/components/ui/button';
+
 type AuthSubmitButtonProps = {
   label: string;
   loadingLabel: string;
   isLoading: boolean;
 };
 
-export function AuthSubmitButton({
-  label,
-  loadingLabel,
-  isLoading,
-}: AuthSubmitButtonProps) {
+export function AuthSubmitButton({ label, loadingLabel, isLoading }: AuthSubmitButtonProps) {
   return (
-    <button
-      type="submit"
-      disabled={isLoading}
-      className="button-primary w-full"
-    >
+    <Button type="submit" disabled={isLoading} className="w-full">
       {isLoading ? loadingLabel : label}
-    </button>
+    </Button>
   );
 }

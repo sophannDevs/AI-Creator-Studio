@@ -1,4 +1,12 @@
 import Link from 'next/link';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 type AuthCardProps = {
   title: string;
@@ -18,26 +26,26 @@ export function AuthCard({
   footerLinkHref,
 }: AuthCardProps) {
   return (
-    <section className="studio-panel w-full max-w-md p-8">
-      <header className="mb-6 space-y-2">
-        <div className="mb-5 flex items-center gap-3">
+    <Card className="w-full max-w-md shadow-lg">
+      <CardHeader className="space-y-3 pb-4">
+        <div className="flex items-center gap-3">
           <span className="brand-mark">AI</span>
-          <span className="studio-label">AI Creator Studio</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            AI Creator Studio
+          </span>
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-950">
-          {title}
-        </h1>
-        <p className="text-sm text-zinc-600">{subtitle}</p>
-      </header>
-
-      {children}
-
-      <p className="mt-6 text-sm text-zinc-600">
-        {footerText}{' '}
-        <Link href={footerLinkHref} className="font-medium text-zinc-900 underline">
-          {footerLinkText}
-        </Link>
-      </p>
-    </section>
+        <CardTitle className="text-2xl font-semibold tracking-tight">{title}</CardTitle>
+        <CardDescription>{subtitle}</CardDescription>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+      <CardFooter>
+        <p className="text-sm text-muted-foreground">
+          {footerText}{' '}
+          <Link href={footerLinkHref} className="font-medium text-foreground underline">
+            {footerLinkText}
+          </Link>
+        </p>
+      </CardFooter>
+    </Card>
   );
 }

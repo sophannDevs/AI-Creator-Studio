@@ -1,3 +1,6 @@
+import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
 type GenerationPanelProps = {
   title: string;
   description: string;
@@ -25,35 +28,37 @@ export function GenerationPanel({
 }: GenerationPanelProps) {
   return (
     <section className="space-y-5">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">{title}</h1>
-        <p className="text-sm text-zinc-600">{description}</p>
+      <header className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </header>
 
-      <div className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-5">{form}</div>
+      <Card>
+        <CardContent className="p-4 sm:p-5">{form}</CardContent>
+      </Card>
 
       {isLoading ? (
-        <p className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-          Loading saved result...
-        </p>
+        <Alert>
+          <AlertDescription>Loading saved result...</AlertDescription>
+        </Alert>
       ) : null}
 
       {isGenerating ? (
-        <p className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-          Generating...
-        </p>
+        <Alert>
+          <AlertDescription>Generating...</AlertDescription>
+        </Alert>
       ) : null}
 
       {error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </p>
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       ) : null}
 
       {success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          {success}
-        </p>
+        <Alert className="border-emerald-200 bg-emerald-50 text-emerald-700">
+          <AlertDescription>{success}</AlertDescription>
+        </Alert>
       ) : null}
 
       {!isLoading && hasResult ? result : null}

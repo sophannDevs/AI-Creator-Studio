@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import type { VideoIdea } from '@/lib/api/ideas';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { buttonVariants } from '@/components/ui/button';
 
 type IdeaListItemProps = {
   idea: VideoIdea;
@@ -7,23 +10,22 @@ type IdeaListItemProps = {
 
 export function IdeaListItem({ idea }: IdeaListItemProps) {
   return (
-    <article className="rounded-xl border border-zinc-200 bg-white p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-2">
-          <h3 className="text-base font-semibold text-zinc-900">{idea.title}</h3>
-          <p className="text-sm text-zinc-600">{idea.hook ?? 'No hook provided.'}</p>
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-            Status: {idea.status}
-          </p>
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold">{idea.title}</h3>
+            <p className="text-sm text-muted-foreground">{idea.hook ?? 'No hook provided.'}</p>
+            <Badge variant="secondary">{idea.status}</Badge>
+          </div>
+          <Link
+            href={`/ideas/${idea.id}`}
+            className={buttonVariants({ variant: 'outline' })}
+          >
+            Open
+          </Link>
         </div>
-
-        <Link
-          href={`/ideas/${idea.id}`}
-          className="button-secondary"
-        >
-          Open
-        </Link>
-      </div>
-    </article>
+      </CardContent>
+    </Card>
   );
 }

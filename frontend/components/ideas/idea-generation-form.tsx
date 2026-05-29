@@ -1,11 +1,17 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export type IdeaGenerationValues = {
   tone: string;
   count: number;
 };
+
+type FieldErrors = { tone?: string; count?: string };
 
 type IdeaGenerationFormProps = {
   isSubmitting: boolean;
@@ -14,12 +20,13 @@ type IdeaGenerationFormProps = {
   onSubmit: (values: IdeaGenerationValues) => Promise<void>;
 };
 
-function validate(values: IdeaGenerationValues): string | null {
-  if (!values.tone.trim()) return 'Tone is required.';
+function validate(values: IdeaGenerationValues): FieldErrors {
+  const errors: FieldErrors = {};
+  if (!values.tone.trim()) errors.tone = 'Tone is required.';
   if (!Number.isFinite(values.count) || values.count < 1 || values.count > 10) {
-    return 'Count must be between 1 and 10.';
+    errors.count = 'Count must be between 1 and 10.';
   }
-  return null;
+  return errors;
 }
 
 export function IdeaGenerationForm({
@@ -30,78 +37,84 @@ export function IdeaGenerationForm({
 }: IdeaGenerationFormProps) {
   const [tone, setTone] = useState('Beginner friendly');
   const [count, setCount] = useState(5);
-  const [validationError, setValidationError] = useState<string | null>(null);
-
-  const effectiveError = useMemo(
-    () => validationError ?? error,
-    [validationError, error],
-  );
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const values: IdeaGenerationValues = {
-      tone,
-      count,
-    };
+    const values: IdeaGenerationValues = { tone, count };
+    const errors = validate(values);
 
-    const formError = validate(values);
-    if (formError) {
-      setValidationError(formError);
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
-    setValidationError(null);
+    setFieldErrors({});
     await onSubmit(values);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-700">Tone</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="tone">
+            Tone <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="tone"
             value={tone}
-            onChange={(event) => setTone(event.target.value)}
+            onChange={(e) => { setTone(e.target.value); setFieldErrors((p) => ({ ...p, tone: undefined })); }}
             placeholder="Beginner friendly"
             disabled={isSubmitting}
-            className="input-control"
+            aria-invalid={!!fieldErrors.tone}
+            required
           />
-        </label>
+          {fieldErrors.tone && (
+            <Alert variant="destructive" className="py-2">
+              <AlertDescription>{fieldErrors.tone}</AlertDescription>
+            </Alert>
+          )}
+        </div>
 
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-700">Count (1-10)</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="count">
+            Count (1–10) <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="count"
             type="number"
             min={1}
             max={10}
             value={count}
-            onChange={(event) => setCount(Number(event.target.value))}
+            onChange={(e) => { setCount(Number(e.target.value)); setFieldErrors((p) => ({ ...p, count: undefined })); }}
             disabled={isSubmitting}
-            className="input-control"
+            aria-invalid={!!fieldErrors.count}
+            required
           />
-        </label>
+          {fieldErrors.count && (
+            <Alert variant="destructive" className="py-2">
+              <AlertDescription>{fieldErrors.count}</AlertDescription>
+            </Alert>
+          )}
+        </div>
       </div>
 
-      {effectiveError ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {effectiveError}
-        </p>
+      {error ? (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       ) : null}
 
       {success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {success}
-        </p>
+        <Alert className="border-emerald-200 bg-emerald-50 text-emerald-700">
+          <AlertDescription>{success}</AlertDescription>
+        </Alert>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="button-primary"
-      >
+      <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Generating ideas...' : 'Generate Ideas'}
-      </button>
+      </Button>
     </form>
   );
 }

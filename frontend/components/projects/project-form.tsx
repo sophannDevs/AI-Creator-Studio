@@ -1,6 +1,11 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export type ProjectFormValues = {
   name: string;
@@ -9,6 +14,8 @@ export type ProjectFormValues = {
   targetAudience: string;
   description: string;
 };
+
+type FieldErrors = Partial<Record<keyof ProjectFormValues, string>>;
 
 type ProjectFormProps = {
   initialValues?: Partial<ProjectFormValues>;
@@ -21,13 +28,13 @@ type ProjectFormProps = {
   onCancel?: () => void;
 };
 
-function validate(values: ProjectFormValues): string | null {
-  if (!values.name.trim()) return 'Name is required.';
-  if (!values.niche.trim()) return 'Niche is required.';
-  if (!values.language.trim()) return 'Language is required.';
-  if (!values.targetAudience.trim()) return 'Target audience is required.';
-
-  return null;
+function validate(values: ProjectFormValues): FieldErrors {
+  const errors: FieldErrors = {};
+  if (!values.name.trim()) errors.name = 'Name is required.';
+  if (!values.niche.trim()) errors.niche = 'Niche is required.';
+  if (!values.language.trim()) errors.language = 'Language is required.';
+  if (!values.targetAudience.trim()) errors.targetAudience = 'Target audience is required.';
+  return errors;
 }
 
 export function ProjectForm({
@@ -43,130 +50,144 @@ export function ProjectForm({
   const [name, setName] = useState(initialValues?.name ?? '');
   const [niche, setNiche] = useState(initialValues?.niche ?? '');
   const [language, setLanguage] = useState(initialValues?.language ?? '');
-  const [targetAudience, setTargetAudience] = useState(
-    initialValues?.targetAudience ?? '',
-  );
+  const [targetAudience, setTargetAudience] = useState(initialValues?.targetAudience ?? '');
   const [description, setDescription] = useState(initialValues?.description ?? '');
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const fieldsDisabled = isSubmitting;
-
-  const effectiveError = useMemo(
-    () => validationError ?? error,
-    [validationError, error],
-  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const values: ProjectFormValues = {
-      name,
-      niche,
-      language,
-      targetAudience,
-      description,
-    };
+    const values: ProjectFormValues = { name, niche, language, targetAudience, description };
+    const errors = validate(values);
 
-    const formError = validate(values);
-    if (formError) {
-      setValidationError(formError);
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
-    setValidationError(null);
+    setFieldErrors({});
     await onSubmit(values);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-700">Name</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="name">
+            Name <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="name"
             value={name}
-            onChange={(event) => setName(event.target.value)}
+            onChange={(e) => { setName(e.target.value); setFieldErrors((p) => ({ ...p, name: undefined })); }}
             placeholder="Backend Developer Channel"
             disabled={fieldsDisabled}
-            className="input-control"
+            aria-invalid={!!fieldErrors.name}
+            required
           />
-        </label>
+          {fieldErrors.name && (
+            <Alert variant="destructive" className="py-2">
+              <AlertDescription>{fieldErrors.name}</AlertDescription>
+            </Alert>
+          )}
+        </div>
 
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-700">Niche</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="niche">
+            Niche <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="niche"
             value={niche}
-            onChange={(event) => setNiche(event.target.value)}
+            onChange={(e) => { setNiche(e.target.value); setFieldErrors((p) => ({ ...p, niche: undefined })); }}
             placeholder="Programming"
             disabled={fieldsDisabled}
-            className="input-control"
+            aria-invalid={!!fieldErrors.niche}
+            required
           />
-        </label>
+          {fieldErrors.niche && (
+            <Alert variant="destructive" className="py-2">
+              <AlertDescription>{fieldErrors.niche}</AlertDescription>
+            </Alert>
+          )}
+        </div>
 
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-700">Language</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="language">
+            Language <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="language"
             value={language}
-            onChange={(event) => setLanguage(event.target.value)}
+            onChange={(e) => { setLanguage(e.target.value); setFieldErrors((p) => ({ ...p, language: undefined })); }}
             placeholder="English"
             disabled={fieldsDisabled}
-            className="input-control"
+            aria-invalid={!!fieldErrors.language}
+            required
           />
-        </label>
+          {fieldErrors.language && (
+            <Alert variant="destructive" className="py-2">
+              <AlertDescription>{fieldErrors.language}</AlertDescription>
+            </Alert>
+          )}
+        </div>
 
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-zinc-700">Target Audience</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="targetAudience">
+            Target Audience <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="targetAudience"
             value={targetAudience}
-            onChange={(event) => setTargetAudience(event.target.value)}
+            onChange={(e) => { setTargetAudience(e.target.value); setFieldErrors((p) => ({ ...p, targetAudience: undefined })); }}
             placeholder="Junior developers"
             disabled={fieldsDisabled}
-            className="input-control"
+            aria-invalid={!!fieldErrors.targetAudience}
+            required
           />
-        </label>
+          {fieldErrors.targetAudience && (
+            <Alert variant="destructive" className="py-2">
+              <AlertDescription>{fieldErrors.targetAudience}</AlertDescription>
+            </Alert>
+          )}
+        </div>
       </div>
 
-      <label className="space-y-2">
-        <span className="text-sm font-medium text-zinc-700">Description (optional)</span>
-        <textarea
+      <div className="space-y-2">
+        <Label htmlFor="description">Description (optional)</Label>
+        <Textarea
+          id="description"
           rows={4}
           value={description}
-          onChange={(event) => setDescription(event.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           placeholder="Teaching backend development"
           disabled={fieldsDisabled}
-          className="input-control"
         />
-      </label>
+      </div>
 
-      {effectiveError ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {effectiveError}
-        </p>
+      {error ? (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       ) : null}
 
       {success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {success}
-        </p>
+        <Alert className="border-emerald-200 bg-emerald-50 text-emerald-700">
+          <AlertDescription>{success}</AlertDescription>
+        </Alert>
       ) : null}
 
       <div className="flex flex-wrap gap-3">
-        <button
-          type="submit"
-          disabled={fieldsDisabled}
-          className="button-primary"
-        >
+        <Button type="submit" disabled={fieldsDisabled}>
           {isSubmitting ? loadingLabel : submitLabel}
-        </button>
+        </Button>
 
         {onCancel ? (
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={fieldsDisabled}
-            className="button-secondary"
-          >
+          <Button type="button" variant="outline" onClick={onCancel} disabled={fieldsDisabled}>
             Cancel
-          </button>
+          </Button>
         ) : null}
       </div>
     </form>

@@ -2,12 +2,10 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/dashboard-layout';
-import {
-  ProjectForm,
-  type ProjectFormValues,
-} from '@/components/projects/project-form';
+import { ProjectForm, type ProjectFormValues } from '@/components/projects/project-form';
 import { useAuth } from '@/components/providers/auth-provider';
 import { ProtectedRoute } from '@/components/routing/protected-route';
 import { createProject } from '@/lib/api/projects';
@@ -53,18 +51,18 @@ export default function NewProjectPage() {
     <ProtectedRoute>
       <DashboardLayout>
         <section className="space-y-5">
-          <header className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
-              Create Project
-            </h1>
-            <p className="text-sm text-zinc-600">
+          <header className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">Create Project</h1>
+            <p className="text-sm text-muted-foreground">
               Set your project context to generate better ideas and scripts.
             </p>
-            <p className="text-xs text-zinc-500">
-              <Link href="/projects" className="underline">
-                Back to projects
-              </Link>
-            </p>
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ChevronLeft className="size-4" />
+              Back to projects
+            </Link>
           </header>
 
           <ProjectForm
